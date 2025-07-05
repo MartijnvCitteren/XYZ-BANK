@@ -10,7 +10,5 @@ public class OnboardingApplication {
 	public static void main(String[] args) {
 		log.info("Starting Onboarding Application");
 		SpringApplication.run(OnboardingApplication.class, args);
-		log.info("Onboarding Application started successfully");
 	}
-
 }
