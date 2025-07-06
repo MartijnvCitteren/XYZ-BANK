@@ -51,8 +51,7 @@ public class Customer extends BaseEntity {
         if (address != null && address.getCustomer() == null) {
             address.setCustomer(this);
         }
-
-        if (accounts != null && accounts.size() > 0) {
+        if (accounts != null && !accounts.isEmpty()) {
             accounts.forEach(account -> account.setCustomer(this));
         }
     }
