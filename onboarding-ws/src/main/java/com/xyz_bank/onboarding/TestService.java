@@ -5,7 +5,7 @@ import com.xyz_bank.onboarding.model.Address;
 import com.xyz_bank.onboarding.model.Customer;
 import com.xyz_bank.onboarding.model.enums.AccountType;
 import com.xyz_bank.onboarding.model.enums.Country;
-import com.xyz_bank.onboarding.repository.CustomerRepository;
+import com.xyz_bank.onboarding.repository.customer.CustomerRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,9 +40,6 @@ public class TestService {
                 .build();
 
         customerRepository.save(customer);
-
-        Customer foundCustomer  = customerRepository.findById(customer.getId()).orElse(null);
-        System.out.println(foundCustomer.toString());
 
     }
 
