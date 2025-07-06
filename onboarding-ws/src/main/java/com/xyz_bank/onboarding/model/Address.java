@@ -37,6 +37,6 @@ public class Address extends BaseEntity {
     private String zipCode;
     private String houseNumber;
 
-    @OneToOne(mappedBy = "address", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "address")
     private Customer customer;
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,4 +45,15 @@ public class Customer extends BaseEntity {
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Account> accounts;
+
+    @PrePersist
+    public void automaticallySetCustomerInRelatedEntities() {
+        if (address != null && address.getCustomer() == null) {
+            address.setCustomer(this);
+        }
+
+        if (accounts != null && accounts.size() > 0) {
+            accounts.forEach(account -> account.setCustomer(this));
+        }
+    }
 }

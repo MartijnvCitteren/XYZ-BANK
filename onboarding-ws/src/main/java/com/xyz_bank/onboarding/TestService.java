@@ -41,6 +41,9 @@ public class TestService {
 
         customerRepository.save(customer);
 
+        Customer foundCustomer  = customerRepository.findById(customer.getId()).orElse(null);
+        System.out.println(foundCustomer.toString());
+
     }
 
 

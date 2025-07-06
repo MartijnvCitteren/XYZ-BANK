@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -41,8 +42,9 @@ public class Account extends BaseEntity {
 
     private BigDecimal balance;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "customer_id")
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    @Setter(AccessLevel.PACKAGE)
     private Customer customer;
 
     public Account(String iban, AccountType type, Currency currency, BigDecimal balance, Customer customer) {
