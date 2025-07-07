@@ -1,5 +1,7 @@
 package com.xyz_bank.onboarding.repository.customer;
 
+import com.xyz_bank.onboarding.factory.AccountFactory;
+import com.xyz_bank.onboarding.factory.CustomerFactory;
 import com.xyz_bank.onboarding.model.Customer;
 import com.xyz_bank.onboarding.repository.BufferedDbExecutor;
 import org.junit.jupiter.api.Test;
@@ -10,34 +12,78 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerRepositoryImpTest {
     @Mock
     private BufferedDbExecutor bufferedDbExecutor;
-    @Mock
-    private CustomerRepository customerRepository;
+
     @InjectMocks
     private CustomerRepositoryImp customerRepositoryImp;
 
     @Test
+    void givenCustomer_whenSave_thenUseBufferdDbExecutor() {
+        //given & when
+        customerRepositoryImp.save(any(Customer.class));
+
+        //then
+        verify(bufferedDbExecutor, times(1)).submit(any(Runnable.class));
+    }
+
+    @Test
     void givenExistingValidUUID_whenFindById_thenReturnCustomer() {
         //given
-        UUID id = UUID.randomUUID();
-        var customer = Customer.builder().id(id).build();
+        UUID uuid = UUID.randomUUID();
+        var customer = CustomerFactory.createCustomer().id(uuid).build();
         when(bufferedDbExecutor.submitWithResult(any(Supplier.class))).thenReturn(Optional.of(customer));
 
         //when
-        Optional<Customer> result = customerRepositoryImp.findById(id);
+        Optional<Customer> result = customerRepositoryImp.findById(uuid);
 
         //then
+        verify(bufferedDbExecutor, times(1)).submitWithResult(any(Supplier.class));
         assertEquals(customer, result.get());
+    }
+
+    @Test
+    void givenNonExistingUUID_whenFindById_thenReturnEmptyOptional() {
+        //given
+        when(bufferedDbExecutor.submitWithResult(any(Supplier.class))).thenReturn(Optional.empty());
+
+        //when
+        Optional<Customer> result = customerRepositoryImp.findById(any(UUID.class));
+
+        //then
+        verify(bufferedDbExecutor, times(1)).submitWithResult(any(Supplier.class));
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void givenExistingUUID_whenFindByIdAndWrongEntiyFound_thenIllegalStateException() {
+        //given
+        var unexpectedAccount = AccountFactory.createAccount().build();
+        when(bufferedDbExecutor.submitWithResult(any(Supplier.class))).thenReturn(Optional.of(unexpectedAccount));
+
+        //when & then
+        assertThrows(IllegalStateException.class, () -> customerRepositoryImp.findById(any(UUID.class)));
+        verify(bufferedDbExecutor, times(1)).submitWithResult(any(Supplier.class));
+    }
+
+    @Test
+    void givenExistingUUID_whenFindByIdWouldReturnCustomerDirectly_thenIllegalStateException() {
+        //given
+        var customer = CustomerFactory.createCustomer().id(UUID.randomUUID()).build();
+        when(bufferedDbExecutor.submitWithResult(any(Supplier.class))).thenReturn(customer);
+
+        //when & then
+        assertThrows(IllegalStateException.class, () -> customerRepositoryImp.findById(any(UUID.class)));
     }
 
 }
