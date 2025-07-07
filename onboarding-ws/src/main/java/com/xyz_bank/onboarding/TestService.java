@@ -5,8 +5,8 @@ import com.xyz_bank.onboarding.model.Address;
 import com.xyz_bank.onboarding.model.Customer;
 import com.xyz_bank.onboarding.model.enums.AccountType;
 import com.xyz_bank.onboarding.model.enums.Country;
-import com.xyz_bank.onboarding.repository.customer.CustomerRepository;
 
+import com.xyz_bank.onboarding.repository.customer.CustomerRepositoryBufferd;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TestService {
-    private final CustomerRepository customerRepository;
+    private final CustomerRepositoryBufferd customerRepository;
 
     public void createCustomer() {
         //test service to validate if an entity is saved properly
