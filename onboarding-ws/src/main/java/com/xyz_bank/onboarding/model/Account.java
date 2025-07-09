@@ -18,6 +18,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -52,5 +53,29 @@ public class Account extends BaseEntity {
         this.currency = currency;
         this.balance = balance;
         this.customer = customer;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", iban='" + iban + '\'' +
+                ", type=" + type +
+                ", currency=" + currency +
+                ", balance=" + balance +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof Account account)){
+            return false;
+        }
+        return Objects.equals(account.iban, iban);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(iban);
     }
 }

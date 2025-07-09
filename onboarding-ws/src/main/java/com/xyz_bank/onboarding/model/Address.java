@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -38,4 +39,34 @@ public class Address extends BaseEntity {
 
     @OneToOne(mappedBy = "address")
     private Customer customer;
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "id=" + id +
+                ", country=" + country +
+                ", city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", houseNumber='" + houseNumber + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof Address other)){
+            return false;
+        }
+
+        return Objects.equals(country, other.getCountry()) &&
+                Objects.equals(city, other.getCity()) &&
+                Objects.equals(street, other.getStreet()) &&
+                Objects.equals(zipCode, other.getZipCode()) &&
+                Objects.equals(houseNumber, other.getHouseNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(country, city, street, zipCode, houseNumber);
+    }
 }
