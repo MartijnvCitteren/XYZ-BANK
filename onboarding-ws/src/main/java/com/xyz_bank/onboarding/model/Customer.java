@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +37,7 @@ public class Customer extends BaseEntity {
     private String firstName;
     private String lastName;
     private String email;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")

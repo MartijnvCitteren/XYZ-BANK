@@ -1,4 +1,4 @@
-package com.xyz_bank.onboarding.repository;
+package com.xyz_bank.onboarding.repository.customer;
 
 import com.xyz_bank.onboarding.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
