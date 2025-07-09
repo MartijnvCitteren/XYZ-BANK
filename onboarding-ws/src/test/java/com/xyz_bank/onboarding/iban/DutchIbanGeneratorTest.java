@@ -5,7 +5,6 @@ import com.xyz_bank.onboarding.exception.XyzDataAccessException;
 import com.xyz_bank.onboarding.model.enums.Country;
 import com.xyz_bank.onboarding.repository.account.AccountRepositoryBuffered;
 import org.iban4j.Iban;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,7 +48,7 @@ class DutchIbanGeneratorTest {
 
         //then
         verify(accountRepositoryBuffered, times(1)).count();
-        assertTrue(result.length() <= LENGTH_DUTCH_IBAN);
+        assertEquals(LENGTH_DUTCH_IBAN,  result.length());
         assertEquals(COUNTRY_CODE_AS_STRING, result.substring(0, 2));
         assertTrue(Integer.parseInt(result.substring(2, 4)) >= MIN_VALUE_CONTROLNUMBER);
         assertTrue(Integer.parseInt(result.substring(2, 4)) <= MAX_VALUE_CONTROLNUMBER);
@@ -70,7 +69,7 @@ class DutchIbanGeneratorTest {
 
         //then
         verify(accountRepositoryBuffered, times(1)).count();
-        assertTrue(result.length() <= LENGTH_DUTCH_IBAN);
+        assertEquals(LENGTH_DUTCH_IBAN,  result.length());
         assertEquals(COUNTRY_CODE_AS_STRING, result.substring(0, 2));
         assertTrue(Integer.parseInt(result.substring(2, 4)) >= MIN_VALUE_CONTROLNUMBER);
         assertTrue(Integer.parseInt(result.substring(2, 4)) <= MAX_VALUE_CONTROLNUMBER);
@@ -90,7 +89,7 @@ class DutchIbanGeneratorTest {
 
         //then
         verify(accountRepositoryBuffered, times(1)).count();
-        assertTrue(result.length() <= LENGTH_DUTCH_IBAN);
+        assertEquals(LENGTH_DUTCH_IBAN,  result.length());
         assertEquals(COUNTRY_CODE_AS_STRING, result.substring(0, 2));
         assertTrue(Integer.parseInt(result.substring(2, 4)) >= MIN_VALUE_CONTROLNUMBER);
         assertTrue(Integer.parseInt(result.substring(2, 4)) <= MAX_VALUE_CONTROLNUMBER);

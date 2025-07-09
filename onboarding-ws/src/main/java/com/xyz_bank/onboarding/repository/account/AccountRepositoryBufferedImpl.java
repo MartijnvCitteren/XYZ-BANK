@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AccountRepositoryBufferdImp implements AccountRepositoryBuffered {
+public class AccountRepositoryBufferedImpl implements AccountRepositoryBuffered {
     private final AccountRepository accountRepository;
 
     @Override

@@ -8,6 +8,8 @@ import org.iban4j.CountryCode;
 import org.iban4j.Iban;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 @Log4j2
 @Component
 @RequiredArgsConstructor
@@ -16,15 +18,15 @@ public class DutchIbanGenerator {
     private static final CountryCode NL = CountryCode.NL;
     private final long startBanknumber = 1_000_000_001L;
     private final AccountRepositoryBuffered accountRepository;
-    private long numbersGenerated = 0;
+    private AtomicLong numbersGenerated = new AtomicLong(0);
 
     public Iban generateIban() throws IbanGenerationException {
         try {
-            if (numbersGenerated == 0) {
-                numbersGenerated = accountRepository.count();
+            if (numbersGenerated.intValue() == 0) {
+                numbersGenerated.set(accountRepository.count());
             }
-            Long accountNumber = startBanknumber + numbersGenerated;
-            numbersGenerated++;
+            Long accountNumber = startBanknumber + numbersGenerated.intValue();
+            numbersGenerated.incrementAndGet();
             return new Iban.Builder()
                     .countryCode(NL)
                     .bankCode(XYZB)
@@ -32,7 +34,7 @@ public class DutchIbanGenerator {
                     .build();
         }
         catch (Exception e) {
-            log.error("Error creating Dutch Iban: " + e.getMessage());
+            log.error("Error creating Dutch Iban: " + e);
             throw new IbanGenerationException(e.getMessage());
         }
 
