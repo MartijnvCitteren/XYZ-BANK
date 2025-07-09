@@ -23,7 +23,7 @@ public class CustomerRepositoryImp implements CustomerRepositoryBufferd {
     }
 
     public Optional<Customer> findById(UUID id) {
-        Object object = bufferedDbExecutor.submitWithResult(new CallableTask<>(() -> customerRepository.findById(id)));
+        Object object = bufferedDbExecutor.submitAndExpectResult(new CallableTask<>(() -> customerRepository.findById(id)));
         if (object instanceof Optional<?> optionalCustomer && optionalCustomer.isEmpty()) {
             return Optional.empty();
         } else if (object instanceof Optional<?> optionalCustomer && optionalCustomer.get() instanceof Customer customer) {
@@ -31,6 +31,5 @@ public class CustomerRepositoryImp implements CustomerRepositoryBufferd {
         } else {
             throw new IllegalStateException("Wrong object retrieved from database");
         }
-
     }
 }

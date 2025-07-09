@@ -8,7 +8,7 @@ public class RunnableTask implements BufferdDbTask {
 
 
     @Override
-    public void execute() throws Exception {
+    public void execute() {
         task.run();
     }
 }

@@ -44,26 +44,26 @@ class CustomerRepositoryImpTest {
         //given
         UUID uuid = UUID.randomUUID();
         var customer = CustomerFactory.createCustomer().id(uuid).build();
-        when(bufferedDbExecutor.submitWithResult(any(BufferdDbTask.class))).thenReturn(Optional.of(customer));
+        when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(Optional.of(customer));
 
         //when
         Optional<Customer> result = customerRepositoryImp.findById(uuid);
 
         //then
-        verify(bufferedDbExecutor, times(1)).submitWithResult(any(BufferdDbTask.class));
+        verify(bufferedDbExecutor, times(1)).submitAndExpectResult(any(BufferdDbTask.class));
         assertEquals(customer, result.get());
     }
 
     @Test
     void givenNonExistingUUID_whenFindById_thenReturnEmptyOptional() {
         //given
-        when(bufferedDbExecutor.submitWithResult(any(BufferdDbTask.class))).thenReturn(Optional.empty());
+        when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(Optional.empty());
 
         //when
         Optional<Customer> result = customerRepositoryImp.findById(any(UUID.class));
 
         //then
-        verify(bufferedDbExecutor, times(1)).submitWithResult(any(BufferdDbTask.class));
+        verify(bufferedDbExecutor, times(1)).submitAndExpectResult(any(BufferdDbTask.class));
         assertTrue(result.isEmpty());
     }
 
@@ -71,18 +71,18 @@ class CustomerRepositoryImpTest {
     void givenExistingUUID_whenFindByIdAndWrongEntiyFound_thenIllegalStateException() {
         //given
         var unexpectedAccount = AccountFactory.createAccount().build();
-        when(bufferedDbExecutor.submitWithResult(any(BufferdDbTask.class))).thenReturn(Optional.of(unexpectedAccount));
+        when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(Optional.of(unexpectedAccount));
 
         //when & then
         assertThrows(IllegalStateException.class, () -> customerRepositoryImp.findById(any(UUID.class)));
-        verify(bufferedDbExecutor, times(1)).submitWithResult(any(BufferdDbTask.class));
+        verify(bufferedDbExecutor, times(1)).submitAndExpectResult(any(BufferdDbTask.class));
     }
 
     @Test
     void givenExistingUUID_whenFindByIdWouldReturnCustomerDirectly_thenIllegalStateException() {
         //given
         var customer = CustomerFactory.createCustomer().id(UUID.randomUUID()).build();
-        when(bufferedDbExecutor.submitWithResult(any(BufferdDbTask.class))).thenReturn(customer);
+        when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(customer);
 
         //when & then
         assertThrows(IllegalStateException.class, () -> customerRepositoryImp.findById(any(UUID.class)));
