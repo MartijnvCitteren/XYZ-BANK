@@ -1,5 +1,7 @@
 package com.xyz_bank.onboarding;
 
+import com.xyz_bank.onboarding.exception.BufferedDbException;
+import com.xyz_bank.onboarding.exception.XyzDataAccessException;
 import com.xyz_bank.onboarding.model.Account;
 import com.xyz_bank.onboarding.model.Address;
 import com.xyz_bank.onboarding.model.Customer;
@@ -41,11 +43,14 @@ public class TestService {
                 .accounts(List.of(account))
                 .build();
 
-        customerRepository.save(customer);
-
-        Optional<Customer> optionalCustomer = customerRepository.findById(UUID.fromString("011cf093-1ce2-4b25-98d5-ff1e2e608aa8"));
-
-        System.out.println("Optional Customer : " + optionalCustomer.get());
+        try {
+            customerRepository.save(customer);
+            Optional<Customer> optionalCustomer = customerRepository.findById(
+                    UUID.fromString("011cf093-1ce2-4b25-98d5-ff1e2e608aa8"));
+            System.out.println("Optional Customer : " + optionalCustomer.get());
+        }catch (BufferedDbException e  ){
+            throw new XyzDataAccessException("Error while saving customer");
+        }
 
 
     }

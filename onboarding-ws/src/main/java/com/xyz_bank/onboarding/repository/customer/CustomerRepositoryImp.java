@@ -1,5 +1,6 @@
 package com.xyz_bank.onboarding.repository.customer;
 
+import com.xyz_bank.onboarding.exception.BufferedDbException;
 import com.xyz_bank.onboarding.model.Customer;
 import com.xyz_bank.onboarding.repository.bufferdDb.BufferedDbExecutor;
 import com.xyz_bank.onboarding.repository.bufferdDb.CallableTask;
@@ -18,11 +19,11 @@ public class CustomerRepositoryImp implements CustomerRepositoryBufferd {
     private final CustomerRepository customerRepository;
 
     @Override
-    public void save(Customer customer) {
+    public void save(Customer customer) throws BufferedDbException {
         bufferedDbExecutor.submit(() -> customerRepository.save(customer));
     }
 
-    public Optional<Customer> findById(UUID id) {
+    public Optional<Customer> findById(UUID id) throws BufferedDbException {
         Object object = bufferedDbExecutor.submitAndExpectResult(new CallableTask<>(() -> customerRepository.findById(id)));
         if (object instanceof Optional<?> optionalCustomer && optionalCustomer.isEmpty()) {
             return Optional.empty();

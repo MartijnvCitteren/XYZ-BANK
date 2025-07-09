@@ -56,7 +56,7 @@ class BufferedDbExecutorTest {
     }
 
     @Test
-    void givenQueueIsEmpty_whenSubmitAndExpectResult_thenReturnObject() {
+    void givenQueueIsEmpty_whenSubmitAndExpectResult_thenReturnObject() throws BufferedDbException {
         //given
         UUID uuid = UUID.randomUUID();
         Optional<Customer> optionalCustomer = Optional.of(CustomerFactory.createCustomer().id(uuid).build());
@@ -80,17 +80,13 @@ class BufferedDbExecutorTest {
     }
 
 
-
-
-
-
-    private void addNumberOfRunnablesToQueue(int numberOfRunnables) {
+    private void addNumberOfRunnablesToQueue(int numberOfRunnables) throws BufferedDbException {
         for (int i = 0; i < numberOfRunnables; i++) {
             bufferedDbExecutor.submit(mock(BufferdDbTask.class));
         }
     }
 
-    private void addNumberOfCallableTasksToQueue(int numberOfCallableTasks) {
+    private void addNumberOfCallableTasksToQueue(int numberOfCallableTasks) throws BufferedDbException {
         for (int i = 0; i < numberOfCallableTasks; i++) {
             bufferedDbExecutor.submit(mock(CallableTask.class));
         }

@@ -31,14 +31,14 @@ public class BufferedDbExecutor {
     private final BlockingQueue<BufferdDbTask> queue = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
 
 
-    public void submit(BufferdDbTask task) {
+    public void submit(BufferdDbTask task) throws BufferedDbException {
         if (!queue.offer(task)) {
             log.error("Queue for bufferd database actions is full");
             throw new BufferedDbException("Queue is full");
         }
     }
 
-    public <T> T submitAndExpectResult(BufferdDbTask task) {
+    public <T> T submitAndExpectResult(BufferdDbTask task) throws BufferedDbException {
         CallableTask<T> callable = castToCallableTask(task);
         if (queue.offer(callable)) {
             return callable.getFuture().join();
@@ -47,7 +47,7 @@ public class BufferedDbExecutor {
         }
     }
 
-    private <T> CallableTask<T> castToCallableTask(BufferdDbTask task) {
+    private <T> CallableTask<T> castToCallableTask(BufferdDbTask task) throws BufferedDbException {
         CallableTask<T> submitTask;
         if (task instanceof CallableTask<?> callableTask) {
             submitTask = (CallableTask<T>) callableTask;

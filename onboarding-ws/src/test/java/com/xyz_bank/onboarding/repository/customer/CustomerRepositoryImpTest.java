@@ -1,5 +1,6 @@
 package com.xyz_bank.onboarding.repository.customer;
 
+import com.xyz_bank.onboarding.exception.BufferedDbException;
 import com.xyz_bank.onboarding.factory.AccountFactory;
 import com.xyz_bank.onboarding.factory.CustomerFactory;
 import com.xyz_bank.onboarding.model.Customer;
@@ -31,7 +32,7 @@ class CustomerRepositoryImpTest {
     private CustomerRepositoryImp customerRepositoryImp;
 
     @Test
-    void givenCustomer_whenSave_thenUseBufferdDbExecutor() {
+    void givenCustomer_whenSave_thenUseBufferdDbExecutor() throws BufferedDbException {
         //given & when
         customerRepositoryImp.save(any(Customer.class));
 
@@ -40,7 +41,7 @@ class CustomerRepositoryImpTest {
     }
 
     @Test
-    void givenExistingValidUUID_whenFindById_thenReturnCustomer() {
+    void givenExistingValidUUID_whenFindById_thenReturnCustomer() throws BufferedDbException {
         //given
         UUID uuid = UUID.randomUUID();
         var customer = CustomerFactory.createCustomer().id(uuid).build();
@@ -55,7 +56,7 @@ class CustomerRepositoryImpTest {
     }
 
     @Test
-    void givenNonExistingUUID_whenFindById_thenReturnEmptyOptional() {
+    void givenNonExistingUUID_whenFindById_thenReturnEmptyOptional() throws BufferedDbException {
         //given
         when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(Optional.empty());
 
@@ -68,7 +69,7 @@ class CustomerRepositoryImpTest {
     }
 
     @Test
-    void givenExistingUUID_whenFindByIdAndWrongEntiyFound_thenIllegalStateException() {
+    void givenExistingUUID_whenFindByIdAndWrongEntiyFound_thenIllegalStateException() throws BufferedDbException {
         //given
         var unexpectedAccount = AccountFactory.createAccount().build();
         when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(Optional.of(unexpectedAccount));
@@ -79,7 +80,8 @@ class CustomerRepositoryImpTest {
     }
 
     @Test
-    void givenExistingUUID_whenFindByIdWouldReturnCustomerDirectly_thenIllegalStateException() {
+    void givenExistingUUID_whenFindByIdWouldReturnCustomerDirectly_thenIllegalStateException()
+            throws BufferedDbException {
         //given
         var customer = CustomerFactory.createCustomer().id(UUID.randomUUID()).build();
         when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(customer);
