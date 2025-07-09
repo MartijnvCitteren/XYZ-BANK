@@ -4,17 +4,18 @@ import com.xyz_bank.onboarding.model.enums.Country;
 import com.xyz_bank.onboarding.repository.account.AccountRepositoryBuffered;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-
+@ExtendWith(MockitoExtension.class)
 class DutchIbanGeneratorTest {
     private static final String COUNTRY_CODE_AS_STRING = Country.THE_NETHERLANDS.getCountryCode();
     private static final String XYZB_AS_STRING = "XYZB";
@@ -33,6 +34,7 @@ class DutchIbanGeneratorTest {
     void setUp() {
         ibansGenrated = 1_000_000_001L; // start value when no Ibans are generated yet
     }
+
 
     @Test
     void givenNoIbansCreated_whenGenerateIban_thenReturnCorrectIban() {
@@ -55,16 +57,18 @@ class DutchIbanGeneratorTest {
     }
 
     @Test
-    void given5IbansCreated_whenGenerateIban_thenReturnCorrectIban() {
+    void given3IbansCreated_whenGenerateIban_thenReturnCorrectIban() {
         //given
-        ibansGenrated = 1_000_000_005L;
-        int valueLastNumber = 5;
+        dutchIbanGenerator.generateIban();
+        dutchIbanGenerator.generateIban();
+        dutchIbanGenerator.generateIban();
+        int valueLastNumber = 4;
 
         //when
         String result = dutchIbanGenerator.generateIban();
 
         //then
-        verifyNoInteractions(accountRepositoryBuffered.count());
+        verify(accountRepositoryBuffered, times(1)).count();
         assertTrue(result.length() <= LENGTH_DUTCH_IBAN);
         assertEquals(COUNTRY_CODE_AS_STRING, result.substring(0, 2));
         assertTrue(Integer.parseInt(result.substring(2, 4)) >= MIN_VALUE_CONTROLNUMBER);
