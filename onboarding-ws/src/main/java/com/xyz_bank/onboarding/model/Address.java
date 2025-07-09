@@ -67,6 +67,6 @@ public class Address extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(country, city, street, zipCode, houseNumber);
     }
 }
