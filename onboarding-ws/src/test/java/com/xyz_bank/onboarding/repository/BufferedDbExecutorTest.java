@@ -3,6 +3,9 @@ package com.xyz_bank.onboarding.repository;
 import com.xyz_bank.onboarding.exception.BufferedDbException;
 import com.xyz_bank.onboarding.factory.CustomerFactory;
 import com.xyz_bank.onboarding.model.Customer;
+import com.xyz_bank.onboarding.repository.bufferdDb.BufferdDbTask;
+import com.xyz_bank.onboarding.repository.bufferdDb.BufferedDbExecutor;
+import com.xyz_bank.onboarding.repository.bufferdDb.CallableTask;
 import com.xyz_bank.onboarding.repository.customer.CustomerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,7 +44,7 @@ class BufferedDbExecutorTest {
         when(customerRepository.findById(any(UUID.class))).thenReturn(optionalCustomer);
 
         //when
-        Object result = bufferedDbExecutor.submitWithResult(()-> customerRepository.findById(uuid));
+        Object result = bufferedDbExecutor.submitWithResult(new CallableTask<>(()->customerRepository.findById(uuid)) {});
 
         //then
         assertEquals(optionalCustomer, result);
@@ -50,7 +52,7 @@ class BufferedDbExecutorTest {
 
     private void addNumberOfRunnablesToQueue(int numberOfRunnables) {
         for (int i = 0; i < numberOfRunnables; i++) {
-            bufferedDbExecutor.submit(mock(Runnable.class));
+            bufferedDbExecutor.submit(mock(BufferdDbTask.class));
         }
     }
 

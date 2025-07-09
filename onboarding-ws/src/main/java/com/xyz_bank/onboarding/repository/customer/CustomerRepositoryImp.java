@@ -1,7 +1,8 @@
 package com.xyz_bank.onboarding.repository.customer;
 
 import com.xyz_bank.onboarding.model.Customer;
-import com.xyz_bank.onboarding.repository.BufferedDbExecutor;
+import com.xyz_bank.onboarding.repository.bufferdDb.BufferedDbExecutor;
+import com.xyz_bank.onboarding.repository.bufferdDb.CallableTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -22,12 +23,10 @@ public class CustomerRepositoryImp implements CustomerRepositoryBufferd {
     }
 
     public Optional<Customer> findById(UUID id) {
-        Object object = bufferedDbExecutor.submitWithResult(() -> customerRepository.findById(id));
+        Object object = bufferedDbExecutor.submitWithResult(new CallableTask<>(() -> customerRepository.findById(id)));
         if (object instanceof Optional<?> optionalCustomer && optionalCustomer.isEmpty()) {
             return Optional.empty();
-        }
-
-        if (object instanceof Optional<?> optionalCustomer && optionalCustomer.get() instanceof Customer customer) {
+        } else if (object instanceof Optional<?> optionalCustomer && optionalCustomer.get() instanceof Customer customer) {
             return Optional.of(customer);
         } else {
             throw new IllegalStateException("Wrong object retrieved from database");

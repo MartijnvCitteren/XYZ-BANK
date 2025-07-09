@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +42,10 @@ public class TestService {
                 .build();
 
         customerRepository.save(customer);
+
+        Optional<Customer> optionalCustomer = customerRepository.findById(UUID.fromString("011cf093-1ce2-4b25-98d5-ff1e2e608aa8"));
+
+        System.out.println("Optional Customer : " + optionalCustomer.get());
 
     }
 
