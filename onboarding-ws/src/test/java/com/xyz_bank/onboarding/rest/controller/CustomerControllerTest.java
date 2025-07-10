@@ -1,6 +1,8 @@
 package com.xyz_bank.onboarding.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xyz_bank.onboarding.exception.IbanGenerationException;
+import com.xyz_bank.onboarding.exception.XyzDataAccessException;
 import com.xyz_bank.onboarding.factory.AddressDtoFactory;
 import com.xyz_bank.onboarding.factory.RegistrationRequestDtoFactory;
 import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
@@ -13,13 +15,17 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,6 +44,74 @@ class CustomerControllerTest {
     private CustomerService customerService;
 
     private RegistrationResponseDto responseDto;
+
+    @BeforeEach
+    void setUp() {
+        responseDto = RegistrationResponseDto.builder().username("username").iban("iban").password("password").build();
+    }
+
+    @Test
+    void givenValidRegistrationRequest_whenRegister_thenReturn201Created() throws Exception {
+        //given
+        var registration = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
+        when(customerService.register(registration)).thenReturn(responseDto);
+
+        //when
+        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(registration)));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username").value("username"))
+                .andExpect(jsonPath("$.iban").value("iban"))
+                .andExpect(jsonPath("$.password").value("password"));
+    }
+
+    @Test
+    void givenXyzDataAccessException_whenRegisterAndCallingService_thenReturn500() throws Exception {
+        //given
+        String errorMessage = "error this went wrong";
+        var registration = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
+        when(customerService.register(registration)).thenThrow(new XyzDataAccessException(errorMessage));
+
+        //when
+        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(registration)));
+
+        //then
+        response.andDo(print()).andExpect(status().isInternalServerError());
+        assertEquals(errorMessage, response.andReturn().getResponse().getContentAsString());
+    }
+//todo: create runtime excption if an account could not be created
+
+//    @Test
+//    void givenIbanGenerationException_whenRegisterAndCallingService_thenReturn500() throws Exception {
+//        //given
+//        String errorMessage = "error this IBAN went wrong";
+//        var registration = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
+//        when(customerService.register(registration)).thenThrow(new IbanGenerationException(errorMessage));
+//
+//        //when
+//        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
+//                                                         .content(objectMapper.writeValueAsString(registration)));
+//
+//        //then
+//        response.andDo(print()).andExpect(status().isInternalServerError());
+//        assertEquals(errorMessage, response.andReturn().getResponse().getContentAsString());
+//    }
+
+    @ParameterizedTest
+    @MethodSource()
+    void givenInvalidRegistrationRequest_whenRegister_thenReturn400BadRequest(RegistrationRequestDto request)
+            throws Exception {
+        //when
+        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        response.andDo(print()).andExpect(status().isBadRequest());
+    }
 
     private static Stream<Arguments> givenInvalidRegistrationRequest_whenRegister_thenReturn400BadRequest() {
         return Stream.of(Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto().email("").build()),
@@ -73,41 +147,6 @@ class CustomerControllerTest {
                         RegistrationRequestDtoFactory.createRegistrationRequestDto()
                                 .address(AddressDtoFactory.createAddressDto().city("").build())
                                 .build()));
-    }
-
-    @BeforeEach
-    void setUp() {
-        responseDto = RegistrationResponseDto.builder().username("username").iban("iban").password("password").build();
-    }
-
-    @Test
-    void givenValidRegistrationRequest_whenRegister_thenReturn201Created() throws Exception {
-        //given
-        var registration = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
-        when(customerService.register(registration)).thenReturn(responseDto);
-
-        //when
-        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
-                                                         .content(objectMapper.writeValueAsString(registration)));
-
-        //then
-        response.andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username").value("username"))
-                .andExpect(jsonPath("$.iban").value("iban"))
-                .andExpect(jsonPath("$.password").value("password"));
-    }
-
-    @ParameterizedTest
-    @MethodSource()
-    void givenInvalidRegistrationRequest_whenRegister_thenReturn400BadRequest(RegistrationRequestDto request)
-            throws Exception {
-        //when
-        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
-                                                         .content(objectMapper.writeValueAsString(request)));
-
-        //then
-        response.andDo(print()).andExpect(status().isBadRequest());
     }
 
 
