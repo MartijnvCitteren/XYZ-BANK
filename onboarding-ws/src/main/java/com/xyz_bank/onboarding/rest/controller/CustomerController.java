@@ -1,7 +1,7 @@
 package com.xyz_bank.onboarding.rest.controller;
 
-import com.xyz_bank.onboarding.rest.dto.RegistrationRequest;
-import com.xyz_bank.onboarding.rest.dto.RegistrationResponse;
+import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
+import com.xyz_bank.onboarding.rest.dto.RegistrationResponseDto;
 import com.xyz_bank.onboarding.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,9 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping("/register")
-    public ResponseEntity<RegistrationResponse> register(@Valid @RequestBody RegistrationRequest registrationRequest) {
-        RegistrationResponse response = customerService.register(registrationRequest);
+    public ResponseEntity<RegistrationResponseDto> register(@Valid @RequestBody
+                                                         RegistrationRequestDto registrationRequestDto) {
+        RegistrationResponseDto response = customerService.register(registrationRequestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
