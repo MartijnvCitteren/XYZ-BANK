@@ -2,7 +2,6 @@ package com.xyz_bank.onboarding.rest.dto;
 
 import com.xyz_bank.onboarding.model.enums.Country;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 

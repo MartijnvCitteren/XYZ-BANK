@@ -19,8 +19,9 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping("/register")
-    public ResponseEntity<RegistrationResponseDto> register(@Valid @RequestBody
-                                                         RegistrationRequestDto registrationRequestDto) {
+    public ResponseEntity<RegistrationResponseDto> register(
+            @Valid @RequestBody RegistrationRequestDto registrationRequestDto) {
+
         RegistrationResponseDto response = customerService.register(registrationRequestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
