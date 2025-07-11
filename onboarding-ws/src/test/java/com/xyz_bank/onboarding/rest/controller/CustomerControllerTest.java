@@ -83,23 +83,22 @@ class CustomerControllerTest {
         response.andDo(print()).andExpect(status().isInternalServerError());
         assertEquals(errorMessage, response.andReturn().getResponse().getContentAsString());
     }
-//todo: create runtime excption if an account could not be created
 
-//    @Test
-//    void givenIbanGenerationException_whenRegisterAndCallingService_thenReturn500() throws Exception {
-//        //given
-//        String errorMessage = "error this IBAN went wrong";
-//        var registration = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
-//        when(customerService.register(registration)).thenThrow(new IbanGenerationException(errorMessage));
-//
-//        //when
-//        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
-//                                                         .content(objectMapper.writeValueAsString(registration)));
-//
-//        //then
-//        response.andDo(print()).andExpect(status().isInternalServerError());
-//        assertEquals(errorMessage, response.andReturn().getResponse().getContentAsString());
-//    }
+    @Test
+    void givenIbanGenerationException_whenRegisterAndCallingService_thenReturn500() throws Exception {
+        //given
+        String errorMessage = "error this IBAN went wrong";
+        var registration = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
+        when(customerService.register(registration)).thenThrow(new IbanGenerationException(errorMessage));
+
+        //when
+        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(registration)));
+
+        //then
+        response.andDo(print()).andExpect(status().isInternalServerError());
+        assertEquals(errorMessage, response.andReturn().getResponse().getContentAsString());
+    }
 
     @ParameterizedTest
     @MethodSource()

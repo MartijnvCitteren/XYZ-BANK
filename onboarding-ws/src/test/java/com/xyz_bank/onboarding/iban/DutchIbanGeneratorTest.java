@@ -37,7 +37,7 @@ class DutchIbanGeneratorTest {
 
 
     @Test
-    void givenNoIbansCreated_whenGenerateIban_thenReturnCorrectIban() throws IbanGenerationException {
+    void givenNoIbansCreated_whenGenerateIban_thenReturnCorrectIban() {
         //given
         Long zeroAccountInDB = 0L;
         int valueLastNumber = 1;
@@ -57,7 +57,7 @@ class DutchIbanGeneratorTest {
     }
 
     @Test
-    void given3IbansCreated_whenGenerateIban_thenReturnCorrectIban() throws IbanGenerationException {
+    void given3IbansCreated_whenGenerateIban_thenReturnCorrectIban() {
         //given
         dutchIbanGenerator.generateIban();
         dutchIbanGenerator.generateIban();
@@ -78,7 +78,7 @@ class DutchIbanGeneratorTest {
     }
 
     @Test
-    void givenAppHasBeenOffline_whenGenerateIban_thenContinueCountingInIbanGeneration() throws IbanGenerationException {
+    void givenAppHasBeenOffline_whenGenerateIban_thenContinueCountingInIbanGeneration() {
         //given
         Long accountsInDB = 26L;
         int valueLastNumbers = 27;
@@ -98,7 +98,7 @@ class DutchIbanGeneratorTest {
     }
 
     @Test
-    void givenException_whenGenerateIban_thenThrowIbanGenerationException() throws IbanGenerationException {
+    void givenException_whenGenerateIban_thenThrowIbanGenerationException() {
         //given
         when(accountRepositoryBuffered.count()).thenThrow(XyzDataAccessException.class);
 
@@ -107,7 +107,7 @@ class DutchIbanGeneratorTest {
     }
 
     @Test
-    void when50000timesGenerateIban_thenSetContains50000Ibans() throws IbanGenerationException {
+    void when50000timesGenerateIban_thenSetContains50000Ibans() {
         //given & when
         int expectedIbanNumbers = 50_000;
         Set<Iban> set = new HashSet<>();
