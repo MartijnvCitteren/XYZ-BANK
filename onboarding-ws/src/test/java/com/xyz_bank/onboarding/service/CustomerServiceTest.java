@@ -5,14 +5,8 @@ import com.xyz_bank.onboarding.exception.InvalidRegistrationException;
 import com.xyz_bank.onboarding.factory.AccountFactory;
 import com.xyz_bank.onboarding.factory.AddressFactory;
 import com.xyz_bank.onboarding.factory.RegistrationRequestDtoFactory;
-import com.xyz_bank.onboarding.iban.DutchIbanGenerator;
 import com.xyz_bank.onboarding.model.Customer;
-import com.xyz_bank.onboarding.model.enums.AccountType;
-import com.xyz_bank.onboarding.repository.account.AccountRepository;
-import com.xyz_bank.onboarding.repository.customer.CustomerRepository;
 import com.xyz_bank.onboarding.repository.customer.CustomerRepositoryBufferd;
-import com.xyz_bank.onboarding.rest.controller.CustomerController;
-import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -20,15 +14,14 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -41,10 +34,13 @@ class CustomerServiceTest {
 
     @Mock
     private CustomerRepositoryBufferd customerRepositoryBufferd;
+
     @Mock
     private AccountService accountService;
+
     @Mock
     private AddressService addressService;
+
     @InjectMocks
     private CustomerService customerService;
 
@@ -54,9 +50,11 @@ class CustomerServiceTest {
     @Test
     void givenValidRegistration_whenRegister_thenReturnResponseWithCorrectValues() throws BufferedDbException {
         //given
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         var request = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
         when(customerRepositoryBufferd.findAllUsernames()).thenReturn(new ArrayList<>());
-        when(accountService.createAccount(request.account())).thenReturn(AccountFactory.createAccount().iban(IBAN).build());
+        when(accountService.createAccount(request.account())).thenReturn(
+                AccountFactory.createAccount().iban(IBAN).build());
         when(addressService.createAddress(request.address())).thenReturn(AddressFactory.createAddress().build());
 
         //then
@@ -78,7 +76,7 @@ class CustomerServiceTest {
         assertEquals(request.firstname(), savedCustomer.getFirstName());
         assertEquals(request.lastname(), savedCustomer.getLastName());
         assertEquals(request.email(), savedCustomer.getEmail());
-        assertEquals(request.dateOfBirth(), savedCustomer.getDateOfBirth());
+        assertEquals(request.dateOfBirth(), savedCustomer.getDateOfBirth().format(formatter));
     }
 
     @Test
@@ -104,7 +102,7 @@ class CustomerServiceTest {
 
         //when & then
         assertThrows(InvalidRegistrationException.class, () -> customerService.register(request));
-        verify(customerRepositoryBufferd, times(1));
+        verify(customerRepositoryBufferd, times(1)).findAllUsernames();
         verifyNoInteractions(addressService);
         verifyNoInteractions(accountService);
     }
@@ -114,15 +112,19 @@ class CustomerServiceTest {
             throws BufferedDbException {
         //given - one user gets added
         String username = "exist123";
-        var firstRequest = RegistrationRequestDtoFactory.createRegistrationRequestDto().username(username).firstname(
-                "Hans").build();
+        var firstRequest = RegistrationRequestDtoFactory.createRegistrationRequestDto()
+                .username(username)
+                .firstname("Hans")
+                .build();
         when(customerRepositoryBufferd.findAllUsernames()).thenReturn(new ArrayList<>());
         when(accountService.createAccount(firstRequest.account())).thenReturn(AccountFactory.createAccount().build());
         when(addressService.createAddress(firstRequest.address())).thenReturn(AddressFactory.createAddress().build());
         customerService.register(firstRequest);
 
-        var realRequest = RegistrationRequestDtoFactory.createRegistrationRequestDto().username(username).firstname(
-                "Barry").build();
+        var realRequest = RegistrationRequestDtoFactory.createRegistrationRequestDto()
+                .username(username)
+                .firstname("Barry")
+                .build();
 
 
         //when & then
