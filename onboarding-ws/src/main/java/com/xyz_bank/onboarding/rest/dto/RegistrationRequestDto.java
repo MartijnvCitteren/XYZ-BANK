@@ -30,6 +30,10 @@ public record RegistrationRequestDto(
 
         @Valid
         @NotNull
-        AddressDto address
+        AddressDto address,
+
+        @Valid
+        @NotNull
+        AccountDto account
 ) {
 }

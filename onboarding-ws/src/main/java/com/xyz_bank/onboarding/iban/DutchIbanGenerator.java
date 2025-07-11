@@ -20,7 +20,7 @@ public class DutchIbanGenerator {
     private final AccountRepositoryBuffered accountRepository;
     private AtomicLong numbersGenerated = new AtomicLong(0);
 
-    public Iban generateIban() throws IbanGenerationException {
+    public String generateIban() throws IbanGenerationException {
         try {
             if (numbersGenerated.intValue() == 0) {
                 numbersGenerated.set(accountRepository.count());
@@ -31,7 +31,7 @@ public class DutchIbanGenerator {
                     .countryCode(NL)
                     .bankCode(XYZB)
                     .accountNumber(accountNumber.toString())
-                    .build();
+                    .build().toString();
         }
         catch (Exception e) {
             log.error("Error creating Dutch Iban: " + e);

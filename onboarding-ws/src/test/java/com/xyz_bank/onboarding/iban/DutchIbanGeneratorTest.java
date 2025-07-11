@@ -110,7 +110,7 @@ class DutchIbanGeneratorTest {
     void when50000timesGenerateIban_thenSetContains50000Ibans() {
         //given & when
         int expectedIbanNumbers = 50_000;
-        Set<Iban> set = new HashSet<>();
+        Set<String> set = new HashSet<>();
 
         for(int i = 1; i <= expectedIbanNumbers; i++){
             set.add(dutchIbanGenerator.generateIban());

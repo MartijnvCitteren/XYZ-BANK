@@ -76,7 +76,8 @@ class CustomerControllerTest {
         when(customerService.register(registration)).thenThrow(new XyzDataAccessException(errorMessage));
 
         //when
-        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
+        ResultActions response = mockMvc.perform(post("/customer/register")
+                                                         .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(registration)));
 
         //then
@@ -92,7 +93,8 @@ class CustomerControllerTest {
         when(customerService.register(registration)).thenThrow(new IbanGenerationException(errorMessage));
 
         //when
-        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
+        ResultActions response = mockMvc.perform(post("/customer/register")
+                                                         .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(registration)));
 
         //then
@@ -105,7 +107,8 @@ class CustomerControllerTest {
     void givenInvalidRegistrationRequest_whenRegister_thenReturn400BadRequest(RegistrationRequestDto request)
             throws Exception {
         //when
-        ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
+        ResultActions response = mockMvc.perform(post("/customer/register")
+                                                         .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(request)));
 
         //then
