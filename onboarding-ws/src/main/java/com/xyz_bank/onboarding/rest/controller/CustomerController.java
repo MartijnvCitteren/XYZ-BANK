@@ -24,7 +24,7 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @Operation(summary = "Register a new customer and create bank account",
-               description = "REST API to register a new Customer, create an unique IBAN, create default password")
+               description = "REST API to register a new Customer, create a unique IBAN, create default password")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "HTTP Status CREATED"),
             @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(
