@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,7 +39,9 @@ public class CustomerRepositoryImp implements CustomerRepositoryBufferd {
 
     @Override
     public List<String> findAllUsernames() throws BufferedDbException {
-        return List.of();
+        return bufferedDbExecutor.submitAndExpectResult(new CallableTask<>(customerRepository::findAllUsernames));
+
+
     }
 
 

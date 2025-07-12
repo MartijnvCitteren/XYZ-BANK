@@ -1,6 +1,7 @@
 package com.xyz_bank.onboarding.rest;
 
 import com.xyz_bank.onboarding.exception.IbanGenerationException;
+import com.xyz_bank.onboarding.exception.InvalidRegistrationException;
 import com.xyz_bank.onboarding.exception.XyzDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,11 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->
             errorMap.put(error.getField(),error.getDefaultMessage()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
+    }
+
+    @ExceptionHandler({InvalidRegistrationException.class})
+    public ResponseEntity<?> handleInvalidRegistrationException(InvalidRegistrationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
 }
