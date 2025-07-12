@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,7 +26,8 @@ public class CustomerRepositoryImp implements CustomerRepositoryBufferd {
 
     @Override
     public Optional<Customer> findById(UUID id) throws BufferedDbException {
-        Object object = bufferedDbExecutor.submitAndExpectResult(new CallableTask<>(() -> customerRepository.findById(id)));
+        Object object = bufferedDbExecutor.submitAndExpectResult(
+                new CallableTask<>(() -> customerRepository.findById(id)));
         if (object instanceof Optional<?> optionalCustomer && optionalCustomer.isEmpty()) {
             return Optional.empty();
         } else if (object instanceof Optional<?> optionalCustomer && optionalCustomer.get() instanceof Customer customer) {

@@ -16,26 +16,27 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler({XyzDataAccessException.class})
-    public ResponseEntity<?> handleXyzDataAccessException(XyzDataAccessException ex) {
+    public ResponseEntity<String> handleXyzDataAccessException(XyzDataAccessException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     @ExceptionHandler({IbanGenerationException.class})
-    public ResponseEntity<?> handleIbanGenerationException(IbanGenerationException ex) {
+    public ResponseEntity<String> handleIbanGenerationException(IbanGenerationException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex) {
         Map<String, String> errorMap = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-            errorMap.put(error.getField(),error.getDefaultMessage()));
+        ex.getBindingResult()
+                .getFieldErrors()
+                .forEach(error -> errorMap.put(error.getField(), error.getDefaultMessage()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
     }
 
     @ExceptionHandler({InvalidRegistrationException.class})
-    public ResponseEntity<?> handleInvalidRegistrationException(InvalidRegistrationException ex) {
+    public ResponseEntity<String> handleInvalidRegistrationException(InvalidRegistrationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
-
 }
