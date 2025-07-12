@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +24,7 @@ import static org.mockito.Mockito.when;
 class AccountServiceTest {
 
     private static final String IBAN = "NL02XYZB1000567890";
+    private static final BigDecimal START_BALANCE = new BigDecimal("0.00");
 
     @Mock
     private DutchIbanGenerator dutchIbanGenerator;
@@ -45,16 +45,17 @@ class AccountServiceTest {
         verify(dutchIbanGenerator, times(1)).generateIban();
         assertEquals(AccountType.CHECKING, result.getType());
         assertEquals(Currency.EURO, result.getCurrency());
-        assertEquals(BigDecimal.valueOf(0.00), result.getBalance());
+        assertEquals(START_BALANCE, result.getBalance());
     }
 
     @Test
     void givenDutchIbanGeneratorThrowsException_whenCreateAccount_thenThrowException() {
         //given
+        var accountDto = AccountDto.builder().accountType(AccountType.CHECKING).build();
         when(dutchIbanGenerator.generateIban()).thenThrow(IbanGenerationException.class);
 
         //when & then
-        assertThrows(IbanGenerationException.class, () -> accountService.createAccount(any(AccountDto.class)));
+        assertThrows(IbanGenerationException.class, () -> accountService.createAccount(accountDto));
     }
 
 

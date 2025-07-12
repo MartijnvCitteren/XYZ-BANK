@@ -47,12 +47,11 @@ public class Account extends BaseEntity {
     @Setter(AccessLevel.PACKAGE)
     private Customer customer;
 
-    public Account(String iban, AccountType type, Currency currency, BigDecimal balance, Customer customer) {
+    public Account(String iban, AccountType type, Currency currency, BigDecimal balance) {
         this.iban = iban;
         this.type = type;
         this.currency = currency;
         this.balance = balance;
-        this.customer = customer;
     }
 
     @Override
