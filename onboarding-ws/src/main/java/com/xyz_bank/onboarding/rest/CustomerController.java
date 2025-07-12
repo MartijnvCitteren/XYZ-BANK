@@ -1,4 +1,4 @@
-package com.xyz_bank.onboarding.rest.controller;
+package com.xyz_bank.onboarding.rest;
 
 import com.xyz_bank.onboarding.rest.dto.LoginRequestDto;
 import com.xyz_bank.onboarding.rest.dto.LoginResponseDto;
@@ -28,7 +28,7 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @Operation(summary = "Register a new customer and create bank account", description =
-            "REST API to register a " + "new" + " Customer, create a unique IBAN, create default password")
+            "REST API to register a new Customer, create a unique IBAN, create default password")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "HTTP Status CREATED"),
             @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content =
             @Content(schema = @Schema(hidden = true))), @ApiResponse(responseCode = "400", description =

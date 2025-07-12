@@ -5,6 +5,7 @@ import com.xyz_bank.onboarding.exception.IbanGenerationException;
 import com.xyz_bank.onboarding.exception.XyzDataAccessException;
 import com.xyz_bank.onboarding.factory.AddressDtoFactory;
 import com.xyz_bank.onboarding.factory.RegistrationRequestDtoFactory;
+import com.xyz_bank.onboarding.rest.CustomerController;
 import com.xyz_bank.onboarding.rest.dto.LoginRequestDto;
 import com.xyz_bank.onboarding.rest.dto.LoginResponseDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
@@ -140,7 +141,7 @@ class CustomerControllerTest {
         LoginRequestDto loginRequest = new LoginRequestDto(null, "password");
 
         //when
-        ResultActions response = mockMvc.perform(post("/customer/register")
+        ResultActions response = mockMvc.perform(post("/customer/login")
                                                          .contentType(MediaType.APPLICATION_JSON)
                                                          .content(objectMapper.writeValueAsString(loginRequest)));
 

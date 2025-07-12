@@ -40,14 +40,12 @@ public class CustomerRepositoryImp implements CustomerRepositoryBuffered {
     }
 
     @Override
-    public List<String> getAllUsernames() throws BufferedDbException {
+    public List<String> getAllUsernames() {
         return bufferedDbExecutor.submitAndExpectResult(new CallableTask<>(customerRepository::getAllUsernames));
-
-
     }
 
     @Override
-    public Map<String, String> getAllUsernamesAndPasswords() throws BufferedDbException {
+    public Map<String, String> getAllUsernamesAndPasswords() {
         List<Customer> list = bufferedDbExecutor.submitAndExpectResult(new CallableTask<>(customerRepository::findAll));
         Map<String, String> map = new HashMap<>();
         if (list.isEmpty()) {
