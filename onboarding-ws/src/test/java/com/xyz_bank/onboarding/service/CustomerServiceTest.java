@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -90,6 +91,24 @@ class CustomerServiceTest {
         verifyNoInteractions(customerRepositoryBufferd);
         verifyNoInteractions(addressService);
         verifyNoInteractions(accountService);
+    }
+
+    @Test
+    void givenCustomerBecame18YoToday_whenRegister_thenReturnResponse() {
+        //given
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String dateOfBirth = LocalDate.now().minusYears(18).format(formatter);
+        var request = RegistrationRequestDtoFactory.createRegistrationRequestDto().dateOfBirth(dateOfBirth).build();
+        when(customerRepositoryBufferd.findAllUsernames()).thenReturn(new ArrayList<>());
+        when(accountService.createAccount(request.account())).thenReturn(
+                AccountFactory.createAccount().iban(IBAN).build());
+        when(addressService.createAddress(request.address())).thenReturn(AddressFactory.createAddress().build());
+
+        //when
+        var result = customerService.register(request);
+
+        //then
+        assertNotNull(result);
     }
 
     @Test
