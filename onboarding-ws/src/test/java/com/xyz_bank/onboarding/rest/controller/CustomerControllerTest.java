@@ -9,6 +9,7 @@ import com.xyz_bank.onboarding.rest.dto.LoginRequestDto;
 import com.xyz_bank.onboarding.rest.dto.LoginResponseDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationResponseDto;
+import com.xyz_bank.onboarding.service.CustomerRegistrationService;
 import com.xyz_bank.onboarding.service.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,9 @@ class CustomerControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
+    private CustomerRegistrationService customerRegistrationService;
+
+    @MockitoBean
     private CustomerService customerService;
 
     private RegistrationResponseDto responseDto;
@@ -53,7 +57,7 @@ class CustomerControllerTest {
     void givenValidRegistrationRequest_whenRegister_thenReturn201Created() throws Exception {
         //given
         var registration = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
-        when(customerService.register(registration)).thenReturn(responseDto);
+        when(customerRegistrationService.register(registration)).thenReturn(responseDto);
 
         //when
         ResultActions response = mockMvc.perform(post("/customer/register").contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +76,7 @@ class CustomerControllerTest {
         //given
         String errorMessage = "error this went wrong";
         var registration = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
-        when(customerService.register(registration)).thenThrow(new XyzDataAccessException(errorMessage));
+        when(customerRegistrationService.register(registration)).thenThrow(new XyzDataAccessException(errorMessage));
 
         //when
         ResultActions response = mockMvc.perform(post("/customer/register")
@@ -89,7 +93,7 @@ class CustomerControllerTest {
         //given
         String errorMessage = "error this IBAN went wrong";
         var registration = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
-        when(customerService.register(registration)).thenThrow(new IbanGenerationException(errorMessage));
+        when(customerRegistrationService.register(registration)).thenThrow(new IbanGenerationException(errorMessage));
 
         //when
         ResultActions response = mockMvc.perform(post("/customer/register")
