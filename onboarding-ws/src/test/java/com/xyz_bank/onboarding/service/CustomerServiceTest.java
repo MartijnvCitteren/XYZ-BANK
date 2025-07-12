@@ -6,7 +6,7 @@ import com.xyz_bank.onboarding.factory.AccountFactory;
 import com.xyz_bank.onboarding.factory.AddressFactory;
 import com.xyz_bank.onboarding.factory.RegistrationRequestDtoFactory;
 import com.xyz_bank.onboarding.model.Customer;
-import com.xyz_bank.onboarding.repository.customer.CustomerRepositoryBufferd;
+import com.xyz_bank.onboarding.repository.customer.CustomerRepositoryBuffered;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,7 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,11 +32,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceTest {
-    private static final String DEFAULT_PW = "default";
     private static final String IBAN = "NL02XYZB1000567890";
 
     @Mock
-    private CustomerRepositoryBufferd customerRepositoryBufferd;
+    private CustomerRepositoryBuffered customerRepositoryBuffered;
 
     @Mock
     private AccountService accountService;
@@ -53,7 +54,7 @@ class CustomerServiceTest {
         //given
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         var request = RegistrationRequestDtoFactory.createRegistrationRequestDto().build();
-        when(customerRepositoryBufferd.findAllUsernames()).thenReturn(new ArrayList<>());
+        when(customerRepositoryBuffered.getAllUsernamesAndPasswords()).thenReturn(new HashMap<>());
         when(accountService.createAccount(request.account())).thenReturn(
                 AccountFactory.createAccount().iban(IBAN).build());
         when(addressService.createAddress(request.address())).thenReturn(AddressFactory.createAddress().build());
@@ -62,18 +63,18 @@ class CustomerServiceTest {
         var result = customerService.register(request);
 
         //then
-        verify(customerRepositoryBufferd, times(1)).findAllUsernames();
-        verify(customerRepositoryBufferd, times(1)).save(customerCaptor.capture());
+        verify(customerRepositoryBuffered, times(1)).getAllUsernamesAndPasswords();
+        verify(customerRepositoryBuffered, times(1)).save(customerCaptor.capture());
         verify(addressService, times(1)).createAddress(request.address());
         verify(accountService, times(1)).createAccount(request.account());
         assertEquals(request.username(), result.username());
-        assertEquals(DEFAULT_PW, result.password());
+        assertNotNull(result.password());
         assertEquals(IBAN, result.iban());
 
         //verify correct values are saved
         Customer savedCustomer = customerCaptor.getValue();
         assertEquals(request.username(), savedCustomer.getUsername());
-        assertEquals(DEFAULT_PW, savedCustomer.getPassword());
+        assertNotNull(savedCustomer.getPassword());
         assertEquals(request.firstname(), savedCustomer.getFirstName());
         assertEquals(request.lastname(), savedCustomer.getLastName());
         assertEquals(request.email(), savedCustomer.getEmail());
@@ -88,7 +89,7 @@ class CustomerServiceTest {
 
         //when & then
         assertThrows(InvalidRegistrationException.class, () -> customerService.register(request));
-        verifyNoInteractions(customerRepositoryBufferd);
+        verifyNoInteractions(customerRepositoryBuffered);
         verifyNoInteractions(addressService);
         verifyNoInteractions(accountService);
     }
@@ -99,7 +100,7 @@ class CustomerServiceTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String dateOfBirth = LocalDate.now().minusYears(18).format(formatter);
         var request = RegistrationRequestDtoFactory.createRegistrationRequestDto().dateOfBirth(dateOfBirth).build();
-        when(customerRepositoryBufferd.findAllUsernames()).thenReturn(new ArrayList<>());
+        when(customerRepositoryBuffered.getAllUsernamesAndPasswords()).thenReturn(new HashMap<>());
         when(accountService.createAccount(request.account())).thenReturn(
                 AccountFactory.createAccount().iban(IBAN).build());
         when(addressService.createAddress(request.address())).thenReturn(AddressFactory.createAddress().build());
@@ -117,11 +118,11 @@ class CustomerServiceTest {
         //given
         String username = "exist123";
         var request = RegistrationRequestDtoFactory.createRegistrationRequestDto().username(username).build();
-        when(customerRepositoryBufferd.findAllUsernames()).thenReturn(List.of(username));
+        when(customerRepositoryBuffered.getAllUsernamesAndPasswords()).thenReturn(Map.of(username, "password"));
 
         //when & then
         assertThrows(InvalidRegistrationException.class, () -> customerService.register(request));
-        verify(customerRepositoryBufferd, times(1)).findAllUsernames();
+        verify(customerRepositoryBuffered, times(1)).getAllUsernamesAndPasswords();
         verifyNoInteractions(addressService);
         verifyNoInteractions(accountService);
     }
@@ -135,7 +136,7 @@ class CustomerServiceTest {
                 .username(username)
                 .firstname("Hans")
                 .build();
-        when(customerRepositoryBufferd.findAllUsernames()).thenReturn(new ArrayList<>());
+        when(customerRepositoryBuffered.getAllUsernamesAndPasswords()).thenReturn(new  HashMap<>());
         when(accountService.createAccount(firstRequest.account())).thenReturn(AccountFactory.createAccount().build());
         when(addressService.createAddress(firstRequest.address())).thenReturn(AddressFactory.createAddress().build());
         customerService.register(firstRequest);
@@ -148,10 +149,10 @@ class CustomerServiceTest {
 
         //when & then
         assertThrows(InvalidRegistrationException.class, () -> customerService.register(realRequest));
-        verify(customerRepositoryBufferd, times(1)).findAllUsernames();
+        verify(customerRepositoryBuffered, times(1)).getAllUsernamesAndPasswords();
         verify(addressService, times(1)).createAddress(firstRequest.address());
         verify(accountService, times(1)).createAccount(firstRequest.account());
-        verify(customerRepositoryBufferd, times(1)).save(customerCaptor.capture());
+        verify(customerRepositoryBuffered, times(1)).save(customerCaptor.capture());
         Customer savedCustomer = customerCaptor.getValue();
         assertEquals(firstRequest.username(), savedCustomer.getUsername());
     }

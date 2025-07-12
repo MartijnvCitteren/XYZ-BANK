@@ -4,7 +4,6 @@ import com.xyz_bank.onboarding.exception.IbanGenerationException;
 import com.xyz_bank.onboarding.exception.XyzDataAccessException;
 import com.xyz_bank.onboarding.model.enums.Country;
 import com.xyz_bank.onboarding.repository.account.AccountRepositoryBuffered;
-import org.iban4j.Iban;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
