@@ -11,5 +11,6 @@ import java.util.UUID;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     @Query(value = "SELECT username FROM Customer")
-    List<String> findAllUsernames();
+    List<String> getAllUsernames();
+
 }

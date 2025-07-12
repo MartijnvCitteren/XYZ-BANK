@@ -8,14 +8,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
 @Log4j2
-public class CustomerRepositoryImp implements CustomerRepositoryBufferd {
+public class CustomerRepositoryImp implements CustomerRepositoryBuffered {
     private final BufferedDbExecutor bufferedDbExecutor;
     private final CustomerRepository customerRepository;
 
@@ -38,10 +40,19 @@ public class CustomerRepositoryImp implements CustomerRepositoryBufferd {
     }
 
     @Override
-    public List<String> findAllUsernames() throws BufferedDbException {
-        return bufferedDbExecutor.submitAndExpectResult(new CallableTask<>(customerRepository::findAllUsernames));
+    public List<String> getAllUsernames() {
+        return bufferedDbExecutor.submitAndExpectResult(new CallableTask<>(customerRepository::getAllUsernames));
+    }
 
-
+    @Override
+    public Map<String, String> getAllUsernamesAndPasswords() {
+        List<Customer> list = bufferedDbExecutor.submitAndExpectResult(new CallableTask<>(customerRepository::findAll));
+        Map<String, String> map = new HashMap<>();
+        if (list.isEmpty()) {
+            return map;
+        }
+        list.forEach(customer -> map.put(customer.getUsername(), customer.getPassword()));
+        return map;
     }
 
 

@@ -1,110 +1,60 @@
 package com.xyz_bank.onboarding.service;
 
-import com.xyz_bank.onboarding.exception.BufferedDbException;
-import com.xyz_bank.onboarding.exception.InvalidRegistrationException;
-import com.xyz_bank.onboarding.model.Account;
-import com.xyz_bank.onboarding.model.Address;
-import com.xyz_bank.onboarding.model.Customer;
-import com.xyz_bank.onboarding.model.enums.Country;
-import com.xyz_bank.onboarding.repository.customer.CustomerRepositoryBufferd;
-import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
-import com.xyz_bank.onboarding.rest.dto.RegistrationResponseDto;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.xyz_bank.onboarding.exception.LoginException;
+import com.xyz_bank.onboarding.repository.customer.CustomerRepositoryBuffered;
+import com.xyz_bank.onboarding.rest.dto.LoginRequestDto;
+import com.xyz_bank.onboarding.rest.dto.LoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class CustomerService {
-    private static final String DEFAULT_PW = "default";
-    private static final List<Country> ELIGIBLE_COUNTRIES = List.of(Country.THE_NETHERLANDS, Country.BELGIUM);
-    private final CustomerRepositoryBufferd customerRepositoryBufferd;
-    private final AccountService accountService;
-    private final AddressService addressService;
-    private Set<String> existingUsernames = Collections.synchronizedSet(new HashSet<>());
+    private final CustomerRepositoryBuffered customerRepositoryBuffered;
+    private final Cache<String, String> inlogCache = Caffeine.newBuilder()
+            .expireAfterWrite(2, TimeUnit.HOURS)
+            .maximumSize(500)
+            .build();
+    private Map<String, String> existingUsernamesAndPasswords = Collections.synchronizedMap(new HashMap<>());
 
-
-    public RegistrationResponseDto register(RegistrationRequestDto registration) {
-        if (isUnder18Yo(registration.dateOfBirth())) {
-            throw new InvalidRegistrationException("Invalid registration - Customer has to be at least 18 years old");
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        String password = getRegisteredPassword(loginRequestDto);
+        if (!loginRequestDto.password().equals(password)) {
+            throw new LoginException("This account does not exist or you use invalid login credentials");
         }
-
-        if(countryIsNotEligble(registration.address().country())){
-            throw new InvalidRegistrationException("Invalid registration - country of residence is not eligible");
-        }
-
-        if (userNameAlreadyExists(registration.username())) {
-            throw new InvalidRegistrationException("Username already exists, please try another username");
-        }
-
-        Address address = addressService.createAddress(registration.address());
-        Account account = accountService.createAccount(registration.account());
-        Customer customer = createCustomer(registration, account, address);
-        customerRepositoryBufferd.save(customer);
-
-        return RegistrationResponseDto.builder()
-                .username(customer.getUsername())
-                .password(DEFAULT_PW)
-                .iban(account.getIban())
-                .build();
+        String token = createToken();
+        inlogCache.put(token, loginRequestDto.username());
+        return new LoginResponseDto(token);
     }
 
-    private LocalDate convertToLocalDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private String createToken() {
+        Algorithm algorithm = Algorithm.HMAC256("xyzb");
         try {
-            return LocalDate.parse(date, formatter);
-        } catch (Exception e) {
-            throw new InvalidRegistrationException("Invalid registration due to date format");
+            return JWT.create().withIssuer("XYZ-BANK").sign(algorithm);
+        } catch (JWTCreationException e) {
+            log.error("Error during JWT creation" + e.getMessage());
+            throw new LoginException("Something unexpected happened during login, please try again");
         }
     }
 
-    private boolean isUnder18Yo(String dateOfBirth) {
-        LocalDate today = LocalDate.now();
-        LocalDate birthDate = convertToLocalDate(dateOfBirth);
-        return birthDate.isAfter(today.minusYears(18));
-    }
-
-    private boolean countryIsNotEligble(Country country) {
-        return !ELIGIBLE_COUNTRIES.contains(country);
-    }
-
-    private boolean userNameAlreadyExists(String username) throws BufferedDbException {
-        if (existingUsernames.isEmpty()) {
-            existingUsernames.addAll(customerRepositoryBufferd.findAllUsernames());
+    private String getRegisteredPassword(LoginRequestDto loginRequestDto) {
+        if (existingUsernamesAndPasswords.isEmpty()) {
+            existingUsernamesAndPasswords.putAll(customerRepositoryBuffered.getAllUsernamesAndPasswords());
         }
-
-        if (existingUsernames.contains(username)) {
-            return true;
-        } else {
-            existingUsernames.add(username);
-            return false;
-        }
-
+        return existingUsernamesAndPasswords.get(loginRequestDto.username());
     }
 
-    private Customer createCustomer(RegistrationRequestDto registration, Account account, Address address) {
-        Customer customer = new Customer();
-        customer.setEmail(registration.email());
-        customer.setUsername(registration.username());
-        customer.setPassword(DEFAULT_PW);
-        customer.setDateOfBirth(convertToLocalDate(registration.dateOfBirth()));
-        customer.setFirstName(registration.firstname());
-        customer.setLastName(registration.lastname());
-        customer.setAddress(address);
-        customer.setAccounts(List.of(account));
-        return customer;
-    }
 
 }
-
-
-
-
