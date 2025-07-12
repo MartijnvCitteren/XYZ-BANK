@@ -17,8 +17,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * To be honest, This felt a bit above my skill / experience level. General idea is from me but during implementation
  * AI support was needed. I think I understand all I implemented. But this would definitly be a class I would double
  * check with senior devs.
- * <p>
- * Also hard to test, quit some overhead if the project grows. Not really a fan and definitlu some cons.
+ *
+ * Also hard to test, quit some overhead if the project grows. Not really a fan and definitly some cons.
  */
 
 
@@ -33,7 +33,7 @@ public class BufferedDbExecutor {
 
     public void submit(BufferdDbTask task) throws BufferedDbException {
         if (!queue.offer(task)) {
-            log.error("Queue for bufferd database actions is full");
+            log.error("Queue for buffered database actions is full");
             throw new BufferedDbException("Queue is full");
         }
     }
