@@ -6,54 +6,54 @@ import com.xyz_bank.onboarding.model.Account;
 import com.xyz_bank.onboarding.model.Address;
 import com.xyz_bank.onboarding.model.Customer;
 import com.xyz_bank.onboarding.model.enums.Country;
-import com.xyz_bank.onboarding.repository.customer.CustomerRepositoryBufferd;
+import com.xyz_bank.onboarding.repository.customer.CustomerRepositoryBuffered;
 import com.xyz_bank.onboarding.rest.dto.LoginRequestDto;
 import com.xyz_bank.onboarding.rest.dto.LoginResponseDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationResponseDto;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class CustomerService {
-    private static final String DEFAULT_PW = "default";
     private static final List<Country> ELIGIBLE_COUNTRIES = List.of(Country.THE_NETHERLANDS, Country.BELGIUM);
-    private final CustomerRepositoryBufferd customerRepositoryBufferd;
+    private final CustomerRepositoryBuffered customerRepositoryBuffered;
     private final AccountService accountService;
     private final AddressService addressService;
-    private Set<String> existingUsernames = Collections.synchronizedSet(new HashSet<>());
+    private Map<String, String> existingUsernamesAndPasswords = Collections.synchronizedMap(new HashMap<>());
 
 
     public RegistrationResponseDto register(RegistrationRequestDto registration) {
         if (isUnder18Yo(registration.dateOfBirth())) {
             throw new InvalidRegistrationException("Invalid registration - Customer has to be at least 18 years old");
 
-        } else if(countryIsNotEligble(registration.address().country())){
+        } else if (countryIsNotEligble(registration.address().country())) {
             throw new InvalidRegistrationException("Invalid registration - country of residence is not eligible");
 
-        }else if (userNameAlreadyExists(registration.username())) {
+        } else if (userNameAlreadyExists(registration.username())) {
             throw new InvalidRegistrationException("Username already exists, please try another username");
         }
 
         Address address = addressService.createAddress(registration.address());
         Account account = accountService.createAccount(registration.account());
         Customer customer = createCustomer(registration, account, address);
-        customerRepositoryBufferd.save(customer);
+        existingUsernamesAndPasswords.put(customer.getUsername(), customer.getPassword());
+        customerRepositoryBuffered.save(customer);
 
         return RegistrationResponseDto.builder()
                 .username(customer.getUsername())
-                .password(DEFAULT_PW)
+                .password(customer.getPassword())
                 .iban(account.getIban())
                 .build();
     }
@@ -61,7 +61,6 @@ public class CustomerService {
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         return null;
     }
-
 
 
     private LocalDate convertToLocalDate(String date) {
@@ -84,14 +83,13 @@ public class CustomerService {
     }
 
     private boolean userNameAlreadyExists(String username) throws BufferedDbException {
-        if (existingUsernames.isEmpty()) {
-            existingUsernames.addAll(customerRepositoryBufferd.findAllUsernames());
+        if (existingUsernamesAndPasswords.isEmpty()) {
+            existingUsernamesAndPasswords.putAll(customerRepositoryBuffered.getAllUsernamesAndPasswords());
         }
 
-        if (existingUsernames.contains(username)) {
+        if (existingUsernamesAndPasswords.get(username) != null) {
             return true;
         } else {
-            existingUsernames.add(username);
             return false;
         }
 
@@ -101,7 +99,7 @@ public class CustomerService {
         Customer customer = new Customer();
         customer.setEmail(registration.email());
         customer.setUsername(registration.username());
-        customer.setPassword(DEFAULT_PW);
+        customer.setPassword(generatePassword());
         customer.setDateOfBirth(convertToLocalDate(registration.dateOfBirth()));
         customer.setFirstName(registration.firstname());
         customer.setLastName(registration.lastname());
@@ -110,6 +108,10 @@ public class CustomerService {
         return customer;
     }
 
+    private String generatePassword() {
+        RandomStringGenerator pwdGenerator = new RandomStringGenerator.Builder().withinRange(33, 45).build();
+        return pwdGenerator.generate(8);
+    }
 }
 
 
