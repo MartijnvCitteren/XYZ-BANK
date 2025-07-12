@@ -42,27 +42,18 @@ public class Address extends BaseEntity {
 
     @Override
     public String toString() {
-        return "Address{" +
-                "id=" + id +
-                ", country=" + country +
-                ", city='" + city + '\'' +
-                ", street='" + street + '\'' +
-                ", zipCode='" + zipCode + '\'' +
-                ", houseNumber='" + houseNumber + '\'' +
-                '}';
+        return "Address{" + "id=" + id + ", country=" + country + ", city='" + city + '\'' + ", street='" + street + '\'' + ", zipCode='" + zipCode + '\'' + ", houseNumber='" + houseNumber + '\'' + '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if(!(o instanceof Address other)){
+        if (!(o instanceof Address other)) {
             return false;
         }
 
-        return Objects.equals(country, other.getCountry()) &&
-                Objects.equals(city, other.getCity()) &&
-                Objects.equals(street, other.getStreet()) &&
-                Objects.equals(zipCode, other.getZipCode()) &&
-                Objects.equals(houseNumber, other.getHouseNumber());
+        return Objects.equals(country, other.getCountry()) && Objects.equals(city, other.getCity()) && Objects.equals(
+                street, other.getStreet()) && Objects.equals(zipCode, other.getZipCode()) && Objects.equals(houseNumber,
+                                                                                                            other.getHouseNumber());
     }
 
     @Override

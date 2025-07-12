@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AddressService {
-    public Address createAddress(AddressDto addressDto){
+    public Address createAddress(AddressDto addressDto) {
         Address address = new Address();
         address.setCountry(addressDto.country());
         address.setCity(addressDto.city());
