@@ -27,9 +27,9 @@ public class CustomerRepositoryImp implements CustomerRepositoryBuffered {
     }
 
     @Override
-    public Optional<Customer> findById(UUID id) throws BufferedDbException {
+    public Optional<Customer> findCustomerByUsername(String username) throws BufferedDbException {
         Object object = bufferedDbExecutor.submitAndExpectResult(
-                new CallableTask<>(() -> customerRepository.findById(id)));
+                new CallableTask<>(() -> customerRepository.findCustomerByUsername(username)));
         if (object instanceof Optional<?> optionalCustomer && optionalCustomer.isEmpty()) {
             return Optional.empty();
         } else if (object instanceof Optional<?> optionalCustomer && optionalCustomer.get() instanceof Customer customer) {

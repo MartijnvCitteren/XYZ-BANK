@@ -1,5 +1,7 @@
 package com.xyz_bank.onboarding.model;
 
+import com.xyz_bank.onboarding.model.enums.AccountType;
+import com.xyz_bank.onboarding.model.enums.Currency;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -44,11 +47,27 @@ public class Customer extends BaseEntity {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Account> accounts;
 
+     public String getOriginalAccountNumber() {
+        return this.getAccounts().getFirst().getIban();
+    }
+
+    public AccountType getAccountType() {
+         return this.getAccounts().getFirst().getType();
+    }
+
+    public BigDecimal getBalance() {
+         return this.getAccounts().getFirst().getBalance();
+    }
+
+    public Currency getCurrency() {
+         return this.getAccounts().getFirst().getCurrency();
+    }
+
     @PrePersist
-    public void automaticallySetCustomerInRelatedEntities() {
+    private void automaticallySetCustomerInRelatedEntities() {
         if (address != null && address.getCustomer() == null) {
             address.setCustomer(this);
         }
