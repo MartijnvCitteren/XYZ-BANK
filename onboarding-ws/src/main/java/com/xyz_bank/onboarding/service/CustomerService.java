@@ -33,7 +33,7 @@ public class CustomerService {
 
     public RegistrationResponseDto register(RegistrationRequestDto registration) {
         if (isUnder18Yo(registration.dateOfBirth()) || countryIsNotEligble(registration.address().country())) {
-            throw new InvalidRegistrationException("Invalid registration due to age of country of residence");
+            throw new InvalidRegistrationException("Invalid registration due to minimum age of country of residence");
         }
 
         if (userNameAlreadyExists(registration.username())) {
