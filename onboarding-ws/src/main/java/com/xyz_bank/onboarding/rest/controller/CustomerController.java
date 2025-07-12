@@ -1,5 +1,7 @@
 package com.xyz_bank.onboarding.rest.controller;
 
+import com.xyz_bank.onboarding.rest.dto.LoginRequestDto;
+import com.xyz_bank.onboarding.rest.dto.LoginResponseDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationResponseDto;
 import com.xyz_bank.onboarding.service.CustomerService;
@@ -38,5 +40,13 @@ public class CustomerController {
         RegistrationResponseDto response = customerService.register(registrationRequestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+        LoginResponseDto response = customerService.login(loginRequestDto);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 
 }

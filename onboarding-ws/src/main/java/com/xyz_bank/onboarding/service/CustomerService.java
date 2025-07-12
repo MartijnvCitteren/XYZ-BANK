@@ -7,8 +7,11 @@ import com.xyz_bank.onboarding.model.Address;
 import com.xyz_bank.onboarding.model.Customer;
 import com.xyz_bank.onboarding.model.enums.Country;
 import com.xyz_bank.onboarding.repository.customer.CustomerRepositoryBufferd;
+import com.xyz_bank.onboarding.rest.dto.LoginRequestDto;
+import com.xyz_bank.onboarding.rest.dto.LoginResponseDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -35,13 +38,11 @@ public class CustomerService {
     public RegistrationResponseDto register(RegistrationRequestDto registration) {
         if (isUnder18Yo(registration.dateOfBirth())) {
             throw new InvalidRegistrationException("Invalid registration - Customer has to be at least 18 years old");
-        }
 
-        if(countryIsNotEligble(registration.address().country())){
+        } else if(countryIsNotEligble(registration.address().country())){
             throw new InvalidRegistrationException("Invalid registration - country of residence is not eligible");
-        }
 
-        if (userNameAlreadyExists(registration.username())) {
+        }else if (userNameAlreadyExists(registration.username())) {
             throw new InvalidRegistrationException("Username already exists, please try another username");
         }
 
@@ -56,6 +57,12 @@ public class CustomerService {
                 .iban(account.getIban())
                 .build();
     }
+
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        return null;
+    }
+
+
 
     private LocalDate convertToLocalDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");

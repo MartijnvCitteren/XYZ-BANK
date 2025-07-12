@@ -5,6 +5,8 @@ import com.xyz_bank.onboarding.exception.IbanGenerationException;
 import com.xyz_bank.onboarding.exception.XyzDataAccessException;
 import com.xyz_bank.onboarding.factory.AddressDtoFactory;
 import com.xyz_bank.onboarding.factory.RegistrationRequestDtoFactory;
+import com.xyz_bank.onboarding.rest.dto.LoginRequestDto;
+import com.xyz_bank.onboarding.rest.dto.LoginResponseDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationResponseDto;
 import com.xyz_bank.onboarding.service.CustomerService;
@@ -111,6 +113,39 @@ class CustomerControllerTest {
         //then
         response.andDo(print()).andExpect(status().isBadRequest());
     }
+
+
+    @Test
+    void givenValidLoginRequest_whenLogin_thenReturn200Ok() throws Exception {
+        //given
+        LoginRequestDto loginRequest = new LoginRequestDto("username", "password");
+        LoginResponseDto loginResponseDto = new LoginResponseDto("token123");
+        when(customerService.login(loginRequest)).thenReturn(loginResponseDto);
+
+        //when
+        ResultActions response = mockMvc.perform(post("/customer/login")
+                                                         .contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(loginRequest)));
+        //then
+        response.andDo(print()).andExpect(status().isOk());
+    }
+
+    @Test
+    void givenInvalidLoginRequest_whenLogin_thenReturn400BadRequest() throws Exception {
+        //given
+        LoginRequestDto loginRequest = new LoginRequestDto(null, "password");
+
+        //when
+        ResultActions response = mockMvc.perform(post("/customer/register")
+                                                         .contentType(MediaType.APPLICATION_JSON)
+                                                         .content(objectMapper.writeValueAsString(loginRequest)));
+
+        //then
+        response.andDo(print()).andExpect(status().isBadRequest());
+    }
+
+
+
 
     private static Stream<Arguments> givenInvalidRegistrationRequest_whenRegister_thenReturn400BadRequest() {
         return Stream.of(Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto().email("").build()),
