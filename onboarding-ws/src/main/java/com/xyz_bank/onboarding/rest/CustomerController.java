@@ -1,5 +1,6 @@
 package com.xyz_bank.onboarding.rest;
 
+import com.xyz_bank.onboarding.rest.dto.AccountOverviewDto;
 import com.xyz_bank.onboarding.rest.dto.LoginRequestDto;
 import com.xyz_bank.onboarding.rest.dto.LoginResponseDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
@@ -12,11 +13,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,6 +56,13 @@ public class CustomerController {
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         LoginResponseDto response = customerService.login(loginRequestDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/overview")
+    public ResponseEntity<AccountOverviewDto>  getOverview(@RequestHeader("Authorization") String token) {
+        System.out.println(token);
+        AccountOverviewDto overview = customerService.getOverview(token);
+        return new ResponseEntity<>(overview, HttpStatus.OK);
     }
 
 

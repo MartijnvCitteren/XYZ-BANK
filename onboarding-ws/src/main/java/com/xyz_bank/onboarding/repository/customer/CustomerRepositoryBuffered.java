@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface CustomerRepositoryBuffered {
     void save(Customer customer);
 
-    Optional<Customer> findById(UUID id);
+    Optional<Customer> findCustomerByUsername(String username);
 
     Map<String, String> getAllUsernamesAndPasswords();
 

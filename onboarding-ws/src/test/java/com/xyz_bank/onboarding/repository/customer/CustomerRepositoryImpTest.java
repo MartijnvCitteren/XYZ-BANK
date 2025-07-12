@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,14 +42,14 @@ class CustomerRepositoryImpTest {
     }
 
     @Test
-    void givenExistingValidUUID_whenFindById_thenReturnCustomer() throws BufferedDbException {
+    void givenExistingValidUUID_whenFindByUserName_thenReturnCustomer() throws BufferedDbException {
         //given
-        UUID uuid = UUID.randomUUID();
-        var customer = CustomerFactory.createCustomer().id(uuid).build();
+        String username = "username";
+        var customer = CustomerFactory.createCustomer().username(username).build();
         when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(Optional.of(customer));
 
         //when
-        Optional<Customer> result = customerRepositoryImp.findById(uuid);
+        Optional<Customer> result = customerRepositoryImp.findCustomerByUsername(username);
 
         //then
         verify(bufferedDbExecutor, times(1)).submitAndExpectResult(any(BufferdDbTask.class));
@@ -61,7 +62,7 @@ class CustomerRepositoryImpTest {
         when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(Optional.empty());
 
         //when
-        Optional<Customer> result = customerRepositoryImp.findById(any(UUID.class));
+        Optional<Customer> result = customerRepositoryImp.findCustomerByUsername(anyString());
 
         //then
         verify(bufferedDbExecutor, times(1)).submitAndExpectResult(any(BufferdDbTask.class));
@@ -75,7 +76,7 @@ class CustomerRepositoryImpTest {
         when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(Optional.of(unexpectedAccount));
 
         //when & then
-        assertThrows(IllegalStateException.class, () -> customerRepositoryImp.findById(any(UUID.class)));
+        assertThrows(IllegalStateException.class, () -> customerRepositoryImp.findCustomerByUsername(anyString()));
         verify(bufferedDbExecutor, times(1)).submitAndExpectResult(any(BufferdDbTask.class));
     }
 
@@ -87,7 +88,7 @@ class CustomerRepositoryImpTest {
         when(bufferedDbExecutor.submitAndExpectResult(any(BufferdDbTask.class))).thenReturn(customer);
 
         //when & then
-        assertThrows(IllegalStateException.class, () -> customerRepositoryImp.findById(any(UUID.class)));
+        assertThrows(IllegalStateException.class, () -> customerRepositoryImp.findCustomerByUsername(anyString()));
     }
 
 }
