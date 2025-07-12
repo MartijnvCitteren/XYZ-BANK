@@ -69,7 +69,7 @@ public class CustomerService {
     private boolean isUnder18Yo(String dateOfBirth) {
         LocalDate today = LocalDate.now();
         LocalDate birthDate = convertToLocalDate(dateOfBirth);
-        return !birthDate.isBefore(today.minusYears(18));
+        return birthDate.isAfter(today.minusYears(18));
     }
 
     private boolean countryIsNotEligble(Country country) {
