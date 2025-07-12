@@ -58,6 +58,13 @@ public class CustomerController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
+    @Operation(summary = "Customer overview", description = "REST API to view the customers account details")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+            @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content =
+            @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                         content = @Content(schema = @Schema(hidden = true)))})
     @GetMapping("/overview")
     public ResponseEntity<AccountOverviewDto>  getOverview(@RequestHeader("Authorization") String token) {
         System.out.println(token);
