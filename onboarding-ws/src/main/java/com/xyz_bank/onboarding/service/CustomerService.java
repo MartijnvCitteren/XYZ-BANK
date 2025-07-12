@@ -76,7 +76,11 @@ public class CustomerService {
     }
 
     private String stripToken(String token) {
-        return token.substring(7);
+        String bearerPrefix = "Bearer ";
+        if (token == null || !token.startsWith(bearerPrefix)) {
+            throw new LoginException("Invalid token format");
+        }
+        return token.substring(bearerPrefix.length());
     }
 
 }
