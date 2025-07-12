@@ -3,6 +3,11 @@ package com.xyz_bank.onboarding.rest.controller;
 import com.xyz_bank.onboarding.rest.dto.RegistrationRequestDto;
 import com.xyz_bank.onboarding.rest.dto.RegistrationResponseDto;
 import com.xyz_bank.onboarding.service.CustomerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomerController {
     private final CustomerService customerService;
 
+    @Operation(summary = "Register a new customer and create bank account",
+               description = "REST API to register a new Customer, create a unique IBAN, create default password")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "HTTP Status CREATED"),
+            @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(
+                    schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(
+                    schema = @Schema(hidden = true)))})
     @PostMapping("/register")
     public ResponseEntity<RegistrationResponseDto> register(
             @Valid @RequestBody RegistrationRequestDto registrationRequestDto) {
