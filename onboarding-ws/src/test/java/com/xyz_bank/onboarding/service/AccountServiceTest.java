@@ -38,7 +38,7 @@ class AccountServiceTest {
         var accountDto = AccountDto.builder().accountType(AccountType.CHECKING).build();
         when(dutchIbanGenerator.generateIban()).thenReturn(IBAN);
 
-        //whem
+        //when
         Account result = accountService.createAccount(accountDto);
 
         //then

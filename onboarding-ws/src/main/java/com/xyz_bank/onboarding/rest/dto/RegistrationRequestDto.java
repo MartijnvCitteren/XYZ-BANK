@@ -19,7 +19,7 @@ public record RegistrationRequestDto(
         @NotBlank(message="Lastname has to contain at least one letter")
         String lastname,
 
-        @Email(message ="Your email adres is invalid, please double check if it's correct")
+        @Email(message ="Your email address is invalid, please double check if it's correct")
         @NotBlank(message = "Email has to contain a valid email and cant be empty")
         String email,
 

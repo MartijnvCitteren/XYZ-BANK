@@ -19,7 +19,7 @@ public record AddressDto(
         @NotBlank(message = "Zipcode has to contain at least on letter")
         String zipcode,
 
-        @NotBlank(message = "City has to contain at least on number or letter")
+        @NotBlank(message = "House number has to contain at least on number or letter")
         String houseNumber
 
 ) {

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +29,7 @@ public class CustomerService {
     private final CustomerRepositoryBufferd customerRepositoryBufferd;
     private final AccountService accountService;
     private final AddressService addressService;
-    private Set<String> existingUsernames = new HashSet<>();
+    private Set<String> existingUsernames = Collections.synchronizedSet(new HashSet<>());
 
 
     public RegistrationResponseDto register(RegistrationRequestDto registration) {

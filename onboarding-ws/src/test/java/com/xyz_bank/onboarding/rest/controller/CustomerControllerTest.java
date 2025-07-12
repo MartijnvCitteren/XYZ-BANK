@@ -15,9 +15,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -25,7 +23,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -128,25 +125,27 @@ class CustomerControllerTest {
                                  RegistrationRequestDtoFactory.createRegistrationRequestDto().firstname("").build()),
                          Arguments.of(
                                  RegistrationRequestDtoFactory.createRegistrationRequestDto().dateOfBirth("").build()),
+                         Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto().dateOfBirth("91-01/01")
+                                              .build()),
                          Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto()
-                                              .dateOfBirth("91-01/01")
-                                              .build()), Arguments.of(
-                        RegistrationRequestDtoFactory.createRegistrationRequestDto().dateOfBirth("01-01-199").build()),
+                                              .dateOfBirth("01-01-199").build()),
+
                          Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto()
                                               .dateOfBirth(null)
-                                              .build()), Arguments.of(
-                        RegistrationRequestDtoFactory.createRegistrationRequestDto().address(null).build()),
+                                              .build()),
+                         Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto().address(null).build()),
                          Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto()
                                               .address(AddressDtoFactory.createAddressDto().street("").build())
-                                              .build()), Arguments.of(
-                        RegistrationRequestDtoFactory.createRegistrationRequestDto()
+                                              .build()),
+                         Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto()
                                 .address(AddressDtoFactory.createAddressDto().country(null).build())
-                                .build()), Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto()
+                                .build()),
+                         Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto()
                                                                 .address(AddressDtoFactory.createAddressDto()
                                                                                  .houseNumber("")
                                                                                  .build())
-                                                                .build()), Arguments.of(
-                        RegistrationRequestDtoFactory.createRegistrationRequestDto()
+                                                                .build()),
+                         Arguments.of(RegistrationRequestDtoFactory.createRegistrationRequestDto()
                                 .address(AddressDtoFactory.createAddressDto().city("").build())
                                 .build()));
     }
